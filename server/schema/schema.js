@@ -1,7 +1,7 @@
 const graphql = require('graphql');
 const _ = require('lodash');
-const albums = require('./data').albums;
-const artists = require('./data').artists;
+const Album = require('../models/album');
+const Artist = require('../models/artist');
 
 const {
   GraphQLObjectType,
@@ -9,7 +9,8 @@ const {
   GraphQLInt,
   GraphQLSchema,
   GraphQLID,
-  GraphQLList
+  GraphQLList,
+  GraphQLNonNull
 } = graphql;
 
 const AlbumType = new GraphQLObjectType({
@@ -22,7 +23,7 @@ const AlbumType = new GraphQLObjectType({
     artist: {
       type: ArtistType,
       resolve(parent, args) {
-        return _.find(artists, { id: parent.artistId });
+        return Artist.findById(parent.artistId);
       }
     }
   })
@@ -37,7 +38,7 @@ const ArtistType = new GraphQLObjectType({
     albums: {
       type: new GraphQLList(AlbumType),
       resolve(parent, args) {
-        return _.filter(albums, { artistId: parent.id });
+        Album.find({artistId: parent.id})
       }
     }
   })
@@ -50,31 +51,70 @@ const RootQuery = new GraphQLObjectType({
       type: AlbumType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
-        return _.find(albums, { id: args.id });
+        return Album.findById(args.id);
       }
     },
     artist: {
       type: ArtistType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
-        return _.find(artists, { id: args.id });
+        return Artist.findById(args.id);
       }
     },
     albums: {
       type: new GraphQLList(AlbumType),
       resolve(parent, args) {
-        return albums;
+        return Album.find({});
       }
     },
     artists: {
       type: new GraphQLList(ArtistType),
       resolve(parent, args) {
-        return artists;
+        return Artist.find({});
+      }
+    }
+  }
+});
+
+const Mutation = new GraphQLObjectType({
+  name: 'Mutation',
+  fields: {
+    addArtist: {
+      type: ArtistType,
+      args: {
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        origin: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve(parent, args) {
+        let artist = new Artist({
+          name: args.name,
+          origin: args.origin
+        });
+        return artist.save();
+      }
+    },
+    addAlbum: {
+      type: AlbumType,
+      args: {
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        genre: { type: new GraphQLNonNull(GraphQLString) },
+        year: { type: new GraphQLNonNull(GraphQLInt) },
+        artistId: { type: new GraphQLNonNull(GraphQLID) }
+      },
+      resolve(parent, args) {
+        let album = new Album({
+          name: args.name,
+          genre: args.genre,
+          year: args.year,
+          artistId: args.artistId
+        });
+        return album.save();
       }
     }
   }
 });
 
 module.exports = new GraphQLSchema({
-  query: RootQuery
+  query: RootQuery,
+  mutation: Mutation
 });
