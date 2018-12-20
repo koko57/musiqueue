@@ -1,12 +1,10 @@
 const graphql = require('graphql');
-const _ = require('lodash');
 const Album = require('../models/album');
 const Artist = require('../models/artist');
 
 const {
   GraphQLObjectType,
   GraphQLString,
-  GraphQLInt,
   GraphQLSchema,
   GraphQLID,
   GraphQLList,
@@ -17,13 +15,16 @@ const AlbumType = new GraphQLObjectType({
   name: 'Album',
   fields: () => ({
     id: { type: GraphQLID },
-    name: { type: GraphQLString },
-    genre: { type: GraphQLString },
-    year: { type: GraphQLInt },
+    title: { type: GraphQLString },
     artist: {
       type: ArtistType,
-      resolve(parent, args) {
-        return Artist.findById(parent.artistId);
+      resolve: async (parent, args) => {
+        const artist = await Album.findById(parent.id).then(album => {
+          return Artist.findOne({
+            name: album.artist
+          });
+        });
+        return artist;
       }
     }
   })
@@ -34,11 +35,10 @@ const ArtistType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
-    origin: { type: GraphQLString },
     albums: {
       type: new GraphQLList(AlbumType),
       resolve(parent, args) {
-        Album.find({artistId: parent.id})
+        return Album.find({ artist: parent.name });
       }
     }
   })
@@ -56,9 +56,9 @@ const RootQuery = new GraphQLObjectType({
     },
     artist: {
       type: ArtistType,
-      args: { id: { type: GraphQLID } },
+      args: { name: { type: GraphQLString } },
       resolve(parent, args) {
-        return Artist.findById(args.id);
+        return Artist.findOne({ name: args.name });
       }
     },
     albums: {
@@ -82,13 +82,11 @@ const Mutation = new GraphQLObjectType({
     addArtist: {
       type: ArtistType,
       args: {
-        name: { type: new GraphQLNonNull(GraphQLString) },
-        origin: { type: new GraphQLNonNull(GraphQLString) }
+        name: { type: new GraphQLNonNull(GraphQLString) }
       },
       resolve(parent, args) {
         let artist = new Artist({
-          name: args.name,
-          origin: args.origin
+          name: args.name
         });
         return artist.save();
       }
@@ -96,19 +94,27 @@ const Mutation = new GraphQLObjectType({
     addAlbum: {
       type: AlbumType,
       args: {
-        name: { type: new GraphQLNonNull(GraphQLString) },
-        genre: { type: new GraphQLNonNull(GraphQLString) },
-        year: { type: new GraphQLNonNull(GraphQLInt) },
-        artistId: { type: new GraphQLNonNull(GraphQLID) }
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        artist: { type: new GraphQLNonNull(GraphQLString) }
       },
-      resolve(parent, args) {
-        let album = new Album({
-          name: args.name,
-          genre: args.genre,
-          year: args.year,
-          artistId: args.artistId
-        });
-        return album.save();
+      resolve: async (parent, args) => {
+        const newAlbum = await Artist.findOne({ name: args.artist })
+          .then(found => {
+            console.log(found);
+            if (!found) {
+              new Artist({ name: args.artist }).save();
+            }
+            return found;
+          })
+          .then(artist => {
+            console.log(artist, 'art');
+            let album = new Album({
+              title: args.title,
+              artist: artist.name
+            });
+            return album;
+          });
+        return newAlbum.save();
       }
     }
   }
