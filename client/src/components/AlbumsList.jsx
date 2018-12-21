@@ -1,46 +1,39 @@
 import React, { Component } from 'react';
-import { gql } from 'apollo-boost';
 import { graphql, compose } from 'react-apollo';
+import { getAlbums, getArtists } from '../queries/queries';
+import AddAlbumForm from './AddAlbumForm';
+import Album from './Album';
 
-const getAlbums = gql`
-  {
-    albums {
-      name
-      id
-    }
-  }
-`;
-const getArtists = gql`
-  {
-    artists {
-      name
-      origin
-      id
-    }
-  }
-`;
 
 class AlbumsList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      addNew: false
+    };
+  }
   render() {
-    const { data } = this.props;
+    const data = this.props.getAlbums;
     const loader = data.loading ? <div>Loading...</div> : null;
-    let artists;
-    data.loading ? artists = null : artists = data.artists.map(a => <li key={a.id}>{a.name}</li>)
-    
+    let albums;
+    data.loading
+      ? (albums = null)
+      : (albums = data.albums.map(a => (
+          <Album key={a.id} title={a.title} artist={a.artist.name} />
+        )));
+
     console.log(this.props);
+    const { addNew } = this.state;
     return (
       <>
         {loader}
-        
-        <div className="album-list">
-          <ul>
-            <li>album</li>
-          </ul>
-        </div>
+        <button onClick={() => this.setState({ addNew: !addNew })}>
+          {addNew ? 'Close' : 'Add New'}
+        </button>
+        {this.state.addNew && <AddAlbumForm />}
+        <div className="album-list" />
         <div className="artist-list">
-          <ul>
-            {artists}
-          </ul>
+          <ul>{albums}</ul>
         </div>
       </>
     );
@@ -48,6 +41,6 @@ class AlbumsList extends Component {
 }
 
 export default compose(
-    graphql(getAlbums, { name: "getAlbums" }),
-    graphql(getArtists, { name: "getArtists" })
+  graphql(getAlbums, { name: 'getAlbums' }),
+  graphql(getArtists, { name: 'getArtists' })
 )(AlbumsList);

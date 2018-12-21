@@ -102,12 +102,11 @@ const Mutation = new GraphQLObjectType({
           .then(found => {
             console.log(found);
             if (!found) {
-              new Artist({ name: args.artist }).save();
+              return new Artist({ name: args.artist }).save();
             }
             return found;
           })
           .then(artist => {
-            console.log(artist, 'art');
             let album = new Album({
               title: args.title,
               artist: artist.name

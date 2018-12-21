@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:300');
+
+
+h1, h2, h3, h4, h5, p {
+    font-weight: normal;
+    color: #3f3f3f;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+h1 {
+    font-family: 'Lato', sans-serif;
+    text-transform: uppercase;
+}
+
+p {
+    font-family: 'Lato', sans-serif;
+}
