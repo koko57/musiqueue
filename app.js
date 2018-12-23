@@ -3,12 +3,16 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const graphqlHTTP = require('express-graphql');
+const { ApolloEngine } = require('apollo-engine');
 const schema = require('./schema/schema');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
 mongoose
-  .connect(process.env.MONGO_DB, { useNewUrlParser: true })
+  .connect(
+    process.env.MONGO_DB,
+    { useNewUrlParser: true }
+  )
   .then(() => console.log('Connected to mlab'));
 
 app.use(cors());
@@ -29,6 +33,16 @@ if (process.env.NODE_ENV === 'production') {
 
 const port = process.env.PORT || 5000;
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+const engine = new ApolloEngine({
+  apiKey: process.env.ENGINE_API_KEY
 });
+
+engine.listen(
+  {
+    port: port,
+    expressApp: app
+  },
+  () => {
+    console.log(`Go to http://localhost:${port}/graphiql to run queries!`);
+  }
+);
