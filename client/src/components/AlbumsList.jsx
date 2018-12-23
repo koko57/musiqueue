@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { graphql, compose } from 'react-apollo';
-import { getAlbums, getArtists, remove } from '../queries/queries';
+import { getAlbums, remove } from '../queries/queries';
 import AddAlbumForm from './AddAlbumForm';
 import Album from './Album';
 import X from './X';
@@ -31,7 +31,7 @@ class AlbumsList extends Component {
     const data = this.props.getAlbums;
     const { addNew } = this.state;
     let albums;
-    if (!data.loading) {
+    if (data.loading === false) {
       albums = data.albums.map(a => (
         <Album
           key={a.id}
@@ -54,6 +54,5 @@ class AlbumsList extends Component {
 
 export default compose(
   graphql(getAlbums, { name: 'getAlbums' }),
-  graphql(getArtists, { name: 'getArtists' }),
   graphql(remove, { name: 'deleteAlbum' })
 )(AlbumsList);

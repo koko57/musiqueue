@@ -13,7 +13,6 @@ const X = ({ rotate, add, onClick }) => {
       opacity="1"
       fill="#d3d3d3"
       fillOpacity="1"
-      marginBottom={add ? '1rem' : 0}
       transform={rotate ? 'rotate(45)' : null}
       onClick={onClick}
     >
