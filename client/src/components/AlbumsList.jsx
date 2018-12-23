@@ -31,7 +31,7 @@ class AlbumsList extends Component {
     const data = this.props.getAlbums;
     const { addNew } = this.state;
     let albums;
-    if (data.loading === false) {
+    if (data.loading === false && data.albums) {
       albums = data.albums.map(a => (
         <Album
           key={a.id}
@@ -47,6 +47,7 @@ class AlbumsList extends Component {
         {addNew && <AddAlbumForm onXClick={this.addNew} />}
         {!addNew && <X onClick={this.addNew} add />}
         <ul>{albums}</ul>
+        {data.loading && <h2>Loading...</h2>}
       </>
     );
   }
