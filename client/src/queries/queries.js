@@ -9,7 +9,7 @@ export const add = gql`
   }
 `;
 
-export const del = gql`
+export const remove = gql`
   mutation deleteAlbum($id: ID!) {
     deleteAlbum(id: $id) {
       id

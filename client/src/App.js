@@ -17,10 +17,11 @@ const Main = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  .title-wrapper {
-    margin-bottom: 2rem;
-    text-align: center;
-  }
+`;
+
+const Title = styled.div`
+  margin-bottom: 2rem;
+  text-align: center;
 `;
 
 class App extends Component {
@@ -31,10 +32,10 @@ class App extends Component {
           <>
             <GlobalStyle />
             <Main>
-              <div className="title-wrapper">
-                <h1 className="title">Musiqueque</h1>
-                <h2 className="subtitle">Your next music discoveries</h2>
-              </div>
+              <Title>
+                <h1>Musiqueque</h1>
+                <h2>Your next music discoveries</h2>
+              </Title>
               <AlbumsList />
             </Main>
           </>

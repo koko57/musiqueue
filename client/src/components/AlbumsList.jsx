@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { graphql, compose } from 'react-apollo';
-import { getAlbums, getArtists, del } from '../queries/queries';
+import { getAlbums, getArtists, remove } from '../queries/queries';
 import AddAlbumForm from './AddAlbumForm';
 import Album from './Album';
 import X from './X';
@@ -46,9 +46,7 @@ class AlbumsList extends Component {
       <>
         {addNew && <AddAlbumForm onXClick={this.addNew} />}
         {!addNew && <X onClick={this.addNew} add />}
-        <div className="album-list">
-          <ul>{albums}</ul>
-        </div>
+        <ul>{albums}</ul>
       </>
     );
   }
@@ -57,5 +55,5 @@ class AlbumsList extends Component {
 export default compose(
   graphql(getAlbums, { name: 'getAlbums' }),
   graphql(getArtists, { name: 'getArtists' }),
-  graphql(del, { name: 'deleteAlbum' })
+  graphql(remove, { name: 'deleteAlbum' })
 )(AlbumsList);
