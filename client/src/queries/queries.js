@@ -1,9 +1,17 @@
 import { gql } from 'apollo-boost';
 
-export const AddAlbum = gql`
-  mutation AddAlbum($title: String!, $artist: String!) {
+export const add = gql`
+  mutation addAlbum($title: String!, $artist: String!) {
     addAlbum(title: $title, artist: $artist) {
       title
+      id
+    }
+  }
+`;
+
+export const del = gql`
+  mutation deleteAlbum($id: ID!) {
+    deleteAlbum(id: $id) {
       id
     }
   }
@@ -20,6 +28,7 @@ export const getAlbums = gql`
     }
   }
 `;
+
 export const getArtists = gql`
   {
     artists {

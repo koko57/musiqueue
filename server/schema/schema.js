@@ -100,7 +100,6 @@ const Mutation = new GraphQLObjectType({
       resolve: async (parent, args) => {
         const newAlbum = await Artist.findOne({ name: args.artist })
           .then(found => {
-            console.log(found);
             if (!found) {
               return new Artist({ name: args.artist }).save();
             }
@@ -114,6 +113,15 @@ const Mutation = new GraphQLObjectType({
             return album;
           });
         return newAlbum.save();
+      }
+    },
+    deleteAlbum: {
+      type: AlbumType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLID) }
+      },
+      resolve: async (parent, args) => {
+        await Album.findByIdAndDelete(args.id);
       }
     }
   }
