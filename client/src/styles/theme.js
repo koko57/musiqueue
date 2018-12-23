@@ -4,10 +4,11 @@ export const theme = {
   },
   colors: {
     light: '#f8f7f7',
-    dark: '#3f3f3f'
+    dark: '#3f3f3f',
+    grey: '#d3d3d3'
   },
   borders: {
-      border: (color) => `1px solid ${color}`,
-      radius: '5px'
+    border: color => `1px solid ${color}`,
+    radius: '5px'
   }
 };
