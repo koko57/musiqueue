@@ -1,14 +1,21 @@
 import React, { Component } from 'react';
+import { createPersistedQueryLink } from 'apollo-link-persisted-queries';
+import { createHttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
 import AlbumsList from './components/AlbumsList';
-import ApolloClient from 'apollo-boost';
+import ApolloClient from 'apollo-client';
 import { ApolloProvider } from 'react-apollo';
 import GlobalStyle from './styles/global';
 import { theme } from './styles/theme';
 import { ThemeProvider } from 'styled-components';
 import styled from 'styled-components';
 
+const link = createPersistedQueryLink().concat(
+  createHttpLink({ uri: '/graphql', credentials: 'same-origin' })
+);
 const client = new ApolloClient({
-  uri: 'http://localhost:5000/graphql'
+  link: link,
+  cache: new InMemoryCache()
 });
 
 const Main = styled.div`
