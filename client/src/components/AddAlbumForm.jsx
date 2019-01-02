@@ -34,36 +34,48 @@ const ButtonsWrapper = styled.div`
   width: 100%;
 `;
 
+const Message = styled.p`
+margin: 1.2rem auto;
+color: ${({ theme }) => theme.colors.red};
+`;
+
+
 class AddAlbumForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
       title: '',
-      artist: ''
+      artist: '',
+      message: false
     };
   }
 
   submitForm = e => {
     e.preventDefault();
-    this.props.addAlbum({
-      variables: {
-        ...this.state
-      },
-      refetchQueries: [{ query: getAlbums }]
-    });
-    this.setState({
-      title: '',
-      artist: ''
-    });
+    const {title, artist} = this.state;
+    if (title && artist) {
+      this.props.addAlbum({
+        variables: {
+          ...this.state
+        },
+        refetchQueries: [{ query: getAlbums }]
+      });
+      this.setState({
+        title: '',
+        artist: ''
+      });
+    } else {
+      this.setState({message: true})
+    }
   };
 
   handleChange = e => {
-    this.setState({ [e.target.name]: e.target.value });
+    this.setState({ [e.target.name]: e.target.value.trim() });
   };
 
   render() {
     const { onXClick } = this.props;
-    const { title, artist } = this.state;
+    const { title, artist, message } = this.state;
     return (
       <>
         <Form onSubmit={this.submitForm}>
@@ -85,6 +97,7 @@ class AddAlbumForm extends Component {
             <Button type="submit">Submit</Button>
             <X onClick={onXClick} rotate add />
           </ButtonsWrapper>
+          {message && <Message>Both fields are required!</Message>}
         </Form>
       </>
     );

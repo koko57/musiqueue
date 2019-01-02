@@ -20,7 +20,8 @@ const GlobalStyle = createGlobalStyle`
   h4,
   h5,
   h6,
-  p {
+  p,
+  li {
     font-weight: normal;
     color: #3f3f3f;
     font-family: ${({ theme }) => theme.fonts.main};

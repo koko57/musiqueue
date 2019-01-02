@@ -5,7 +5,8 @@ export const theme = {
   colors: {
     light: '#f8f7f7',
     dark: '#3f3f3f',
-    grey: '#d3d3d3'
+    grey: '#d3d3d3',
+    red: '#ba2a26'
   },
   borders: {
     border: color => `1px solid ${color}`,

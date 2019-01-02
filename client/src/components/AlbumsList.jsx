@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
 import { graphql, compose } from 'react-apollo';
 import { getAlbums, remove } from '../queries/queries';
+import styled from 'styled-components';
 import AddAlbumForm from './AddAlbumForm';
 import Album from './Album';
+import Loader from './Loader';
 import X from './X';
+
+const List = styled.ul`
+  margin: 2rem auto;
+`;
 
 class AlbumsList extends Component {
   constructor(props) {
@@ -32,22 +38,26 @@ class AlbumsList extends Component {
     const { addNew } = this.state;
     let albums;
     if (data.loading === false && data.albums) {
-      albums = data.albums.map(a => (
-        <Album
-          key={a.id}
-          title={a.title}
-          artist={a.artist.name}
-          artistId={a.id}
-          onXClick={this.handleClick}
-        />
-      ));
+      if (data.albums.length === 0) {
+        albums = <li>No albums in your queue.</li>;
+      } else {
+        albums = data.albums.map(a => (
+          <Album
+            key={a.id}
+            title={a.title}
+            artist={a.artist.name}
+            artistId={a.id}
+            onXClick={this.handleClick}
+          />
+        ));
+      }
     }
     return (
       <>
         {addNew && <AddAlbumForm onXClick={this.addNew} />}
         {!addNew && <X onClick={this.addNew} add />}
-        <ul>{albums}</ul>
-        {data.loading && <h2>Loading...</h2>}
+        <List>{albums}</List>
+        {data.loading && <Loader />}
       </>
     );
   }
