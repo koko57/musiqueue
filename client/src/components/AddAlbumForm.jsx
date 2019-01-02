@@ -35,10 +35,9 @@ const ButtonsWrapper = styled.div`
 `;
 
 const Message = styled.p`
-margin: 1.2rem auto;
-color: ${({ theme }) => theme.colors.red};
+  margin: 1.2rem auto;
+  color: ${({ theme }) => theme.colors.red};
 `;
-
 
 class AddAlbumForm extends Component {
   constructor(props) {
@@ -52,11 +51,12 @@ class AddAlbumForm extends Component {
 
   submitForm = e => {
     e.preventDefault();
-    const {title, artist} = this.state;
+    const { title, artist } = this.state;
     if (title && artist) {
       this.props.addAlbum({
         variables: {
-          ...this.state
+          title: title.trim(),
+          artist: artist.trim()
         },
         refetchQueries: [{ query: getAlbums }]
       });
@@ -65,12 +65,12 @@ class AddAlbumForm extends Component {
         artist: ''
       });
     } else {
-      this.setState({message: true})
+      this.setState({ message: true });
     }
   };
 
   handleChange = e => {
-    this.setState({ [e.target.name]: e.target.value.trim() });
+    this.setState({ [e.target.name]: e.target.value });
   };
 
   render() {
