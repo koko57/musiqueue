@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import X from './X';
+import { XCircle } from 'react-feather';
 
 const ListItem = styled.li`
   padding: 0.5rem;
@@ -21,7 +21,7 @@ const Album = ({ artistId, title, artist, onXClick }) => {
         <p>{title}</p>
         <p>{artist}</p>
       </div>
-      <X onClick={onXClick} rotate />
+      <XCircle onClick={onXClick} color="#d3d3d3"/>
     </ListItem>
   );
 };

@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import AddAlbumForm from './AddAlbumForm';
 import Album from './Album';
 import Loader from './Loader';
-import X from './X';
+import { PlusCircle } from 'react-feather';
 
 const List = styled.ul`
   margin: 2rem auto;
@@ -55,7 +55,7 @@ class AlbumsList extends Component {
     return (
       <>
         {addNew && <AddAlbumForm onXClick={this.addNew} />}
-        {!addNew && <X onClick={this.addNew} add />}
+        {!addNew && <PlusCircle onClick={this.addNew} color="#d3d3d3" size={32}/>}
         <List>{albums}</List>
         {data.loading && <Loader />}
       </>

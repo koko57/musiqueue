@@ -3,7 +3,7 @@ import { graphql, compose } from 'react-apollo';
 import { getAlbums, add } from '../queries/queries';
 import styled from 'styled-components';
 import Button from './Button';
-import X from './X';
+import { XCircle } from 'react-feather';
 
 const Form = styled.form`
   display: flex;
@@ -70,7 +70,7 @@ class AddAlbumForm extends Component {
   };
 
   handleChange = e => {
-    this.setState({ [e.target.name]: e.target.value });
+    this.setState({ [e.target.name]: e.target.value, message: false });
   };
 
   render() {
@@ -95,7 +95,7 @@ class AddAlbumForm extends Component {
           />
           <ButtonsWrapper>
             <Button type="submit">Submit</Button>
-            <X onClick={onXClick} rotate add />
+            <XCircle onClick={onXClick} color="#d3d3d3"/>
           </ButtonsWrapper>
           {message && <Message>Both fields are required!</Message>}
         </Form>
