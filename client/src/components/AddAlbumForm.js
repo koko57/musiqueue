@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { graphql, compose } from 'react-apollo';
-import { getAlbums, add } from '../queries/queries';
+// import { graphql, compose } from 'react-apollo';
+// import { getAlbums, add } from '../queries/queries';
 import styled from 'styled-components';
 import Button from './Button';
 import { XCircle } from 'react-feather';
@@ -19,9 +19,6 @@ const Input = styled.input`
   width: 100%;
   border: 1px solid #f4f4f4;
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  -ms-appearance: none;
   border: none;
   background: none;
   border-bottom: ${({ theme }) => theme.borders.border(theme.colors.grey)};
@@ -58,7 +55,7 @@ class AddAlbumForm extends Component {
           title: title.trim(),
           artist: artist.trim()
         },
-        refetchQueries: [{ query: getAlbums }]
+        // refetchQueries: [{ query: getAlbums }]
       });
       this.setState({
         title: '',
@@ -104,4 +101,5 @@ class AddAlbumForm extends Component {
   }
 }
 
-export default compose(graphql(add, { name: 'addAlbum' }))(AddAlbumForm);
+// export default compose(graphql(add, { name: 'addAlbum' }))(AddAlbumForm);
+export default AddAlbumForm;

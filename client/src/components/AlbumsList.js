@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
-import { graphql, compose } from 'react-apollo';
-import { getAlbums, remove } from '../queries/queries';
+// import { getAlbums, remove } from '../queries/queries';
 import styled from 'styled-components';
 import AddAlbumForm from './AddAlbumForm';
 import Album from './Album';
 import Loader from './Loader';
 import { PlusCircle } from 'react-feather';
 
-const List = styled.ul`
+const SList = styled.ul`
   margin: 2rem auto;
 `;
 
@@ -25,7 +24,7 @@ class AlbumsList extends Component {
       variables: {
         id
       },
-      refetchQueries: [{ query: getAlbums }]
+      // refetchQueries: [{ query: getAlbums }]
     });
   };
 
@@ -34,7 +33,7 @@ class AlbumsList extends Component {
   };
 
   render() {
-    const data = this.props.getAlbums;
+    const data = this.props?.getAlbums || {};
     const { addNew } = this.state;
     let albums;
     if (data.loading === false && data.albums) {
@@ -56,14 +55,13 @@ class AlbumsList extends Component {
       <>
         {addNew && <AddAlbumForm onXClick={this.addNew} />}
         {!addNew && <PlusCircle onClick={this.addNew} color="#d3d3d3" size={32}/>}
-        <List>{albums}</List>
-        {data.loading && <Loader />}
+        <SList>{albums}</SList>
+        {data?.loading && <Loader />}
       </>
     );
   }
 }
 
-export default compose(
-  graphql(getAlbums, { name: 'getAlbums' }),
-  graphql(remove, { name: 'deleteAlbum' })
-)(AlbumsList);
+export default AlbumsList
+
+//
