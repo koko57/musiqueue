@@ -1,6 +1,5 @@
 # Musiqueue
-Simple app for queuing music albums using GraphQL with database hosted on [mLab](https://mlab.com/).
-
+Simple app for queuing music albums using GraphQL with database hosted on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
 
 ## Built with
 Front End: React, Apollo, Styled Components
@@ -41,6 +40,10 @@ npm start
 ```
 ## Live version
 https://musiqueueue.herokuapp.com/
+
+## Older versions
+The first versions of the app is now moved to v1 branch. It was build with pre-hook react and old apollo client libs.
+Updated frontend version on master (deployed on heroku) and v2.
 
 ## License
 This project is licensed under the ISC License
