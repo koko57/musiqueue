@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery, gql, useMutation } from '@apollo/client';
 import { PlusCircle } from 'react-feather';
 import styled from 'styled-components';
 import { AddAlbumForm } from './AddAlbumForm';
@@ -22,15 +22,26 @@ export const GET_ALBUMS = gql`
     }
 `;
 
+export const DELETE_ALBUM = gql`
+    mutation deleteAlbum($id: ID!) {
+        deleteAlbum(id: $id) {
+            id
+        }
+    }
+`;
+
 export const AlbumsList = () => {
     const { loading, error, data } = useQuery(GET_ALBUMS);
+    const [deleteAlbum] = useMutation(DELETE_ALBUM, {
+        refetchQueries: ['getAlbums'],
+    });
 
     const [addNew, setAddNew] = useState(false);
 
     const { albums } = data || {};
 
     const handleDelete = (id) => {
-        console.log(id);
+        deleteAlbum({ variables: { id } });
     };
 
     const toggleAddNewForm = () => setAddNew(!addNew);
