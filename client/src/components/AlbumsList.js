@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { PlusCircle } from 'react-feather';
 import styled from 'styled-components';
-import AddAlbumForm from './AddAlbumForm';
+import { AddAlbumForm } from './AddAlbumForm';
 import Album from './Album';
 import Loader from './Loader';
 
@@ -36,7 +36,7 @@ export const AlbumsList = () => {
     const toggleAddNewForm = () => setAddNew(!addNew);
 
     const renderAlbums = () => {
-        if (albums.length) {
+        if (albums?.length) {
             return albums.map((album) => (
                 <Album
                     key={album.id}

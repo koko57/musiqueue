@@ -1,105 +1,115 @@
-import React, { Component } from 'react';
-// import { graphql, compose } from 'react-apollo';
-// import { getAlbums, add } from '../queries/queries';
+import React, { useState } from 'react';
+import { useMutation, gql } from '@apollo/client';
 import styled from 'styled-components';
-import Button from './Button';
+import { Button } from './Button';
 import { XCircle } from 'react-feather';
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 250px;
-  margin-bottom: 2rem;
+const SForm = styled.form`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 250px;
+    margin-bottom: 2rem;
 `;
 
-const Input = styled.input`
-  margin: 1rem;
-  padding: 0.5rem;
-  width: 100%;
-  border: 1px solid #f4f4f4;
-  appearance: none;
-  border: none;
-  background: none;
-  border-bottom: ${({ theme }) => theme.borders.border(theme.colors.grey)};
+const SInput = styled.input`
+    margin: 1rem;
+    padding: 0.5rem;
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #f4f4f4;
+    appearance: none;
+    background: transparent;
+    border-bottom: ${({ theme }) => theme.borders.border(theme.colors.grey)};
 `;
 
-const ButtonsWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+const SButtonsWrapper = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 `;
 
-const Message = styled.p`
-  margin: 1.2rem auto;
-  color: ${({ theme }) => theme.colors.red};
+const SMessage = styled.p`
+    margin: 1.2rem auto;
+    color: ${({ theme }) => theme.colors.red};
 `;
 
-class AddAlbumForm extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      title: '',
-      artist: '',
-      message: false
-    };
-  }
-
-  submitForm = e => {
-    e.preventDefault();
-    const { title, artist } = this.state;
-    if (title && artist) {
-      this.props.addAlbum({
-        variables: {
-          title: title.trim(),
-          artist: artist.trim()
-        },
-        // refetchQueries: [{ query: getAlbums }]
-      });
-      this.setState({
-        title: '',
-        artist: ''
-      });
-    } else {
-      this.setState({ message: true });
+const ADD_ALBUM = gql`
+    mutation addAlbum($title: String!, $artist: String!) {
+        addAlbum(title: $title, artist: $artist) {
+            title
+            id
+        }
     }
-  };
+`;
 
-  handleChange = e => {
-    this.setState({ [e.target.name]: e.target.value, message: false });
-  };
+export const AddAlbumForm = ({ onXClick }) => {
+    const [artist, setArtist] = useState('');
+    const [title, setTitle] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
-  render() {
-    const { onXClick } = this.props;
-    const { title, artist, message } = this.state;
+    const [addAlbum] = useMutation(ADD_ALBUM, {
+        update(cache, { data: { addAlbum } }) {
+            cache.modify({
+                fields: {
+                    albums(existingAlbums = []) {
+                        const newAlbumRef = cache.writeFragment({
+                            data: addAlbum,
+                            fragment: gql`
+                                fragment NewAlbum on Album {
+                                    title
+                                    artist
+                                }
+                            `,
+                        });
+                        return [...existingAlbums, newAlbumRef];
+                    },
+                },
+            });
+        },
+    });
+
+    const submitForm = async (e) => {
+        e.preventDefault();
+        if (artist && title) {
+            try {
+                await addAlbum({ variables: { title, artist } });
+            } catch (e) {
+                setErrorMessage('Something went Wrong!');
+            }
+        } else {
+            setErrorMessage('Both fields are required!');
+        }
+    };
+
     return (
-      <>
-        <Form onSubmit={this.submitForm}>
-          <Input
-            type="text"
-            name="title"
-            placeholder="Title"
-            value={title}
-            onChange={this.handleChange}
-          />
-          <Input
-            type="text"
-            name="artist"
-            placeholder="Artist"
-            value={artist}
-            onChange={this.handleChange}
-          />
-          <ButtonsWrapper>
-            <Button type="submit">Submit</Button>
-            <XCircle onClick={onXClick} color="#d3d3d3"/>
-          </ButtonsWrapper>
-          {message && <Message>Both fields are required!</Message>}
-        </Form>
-      </>
+        <>
+            <SForm onSubmit={submitForm}>
+                <SInput
+                    type="text"
+                    name="title"
+                    placeholder="Title"
+                    value={title}
+                    onChange={(e) => {
+                        setTitle(e.target.value);
+                    }}
+                />
+                <SInput
+                    type="text"
+                    name="artist"
+                    placeholder="Artist"
+                    value={artist}
+                    onChange={(e) => {
+                        setArtist(e.target.value);
+                    }}
+                />
+                <SButtonsWrapper>
+                    <Button type="submit">Submit</Button>
+                    <XCircle onClick={onXClick} color="#d3d3d3" />
+                </SButtonsWrapper>
+                {errorMessage && <SMessage>{errorMessage}</SMessage>}
+            </SForm>
+        </>
     );
-  }
-}
-
-// export default compose(graphql(add, { name: 'addAlbum' }))(AddAlbumForm);
-export default AddAlbumForm;
+};
