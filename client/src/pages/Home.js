@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import AlbumsList from '../components/AlbumsList';
+import { AlbumsList } from '../components/AlbumsList';
 
 const SMain = styled.div`
     max-width: 800px;

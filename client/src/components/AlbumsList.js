@@ -1,67 +1,66 @@
-import React, { Component } from 'react';
-// import { getAlbums, remove } from '../queries/queries';
+import React, { useState } from 'react';
+import { useQuery, gql } from '@apollo/client';
+import { PlusCircle } from 'react-feather';
 import styled from 'styled-components';
 import AddAlbumForm from './AddAlbumForm';
 import Album from './Album';
 import Loader from './Loader';
-import { PlusCircle } from 'react-feather';
 
 const SList = styled.ul`
-  margin: 2rem auto;
+    margin: 2rem auto;
 `;
 
-class AlbumsList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      addNew: false
-    };
-  }
-
-  handleClick = e => {
-    const id = e.target.parentNode.id;
-    this.props.deleteAlbum({
-      variables: {
-        id
-      },
-      // refetchQueries: [{ query: getAlbums }]
-    });
-  };
-
-  addNew = () => {
-    this.setState({ addNew: !this.state.addNew });
-  };
-
-  render() {
-    const data = this.props?.getAlbums || {};
-    const { addNew } = this.state;
-    let albums;
-    if (data.loading === false && data.albums) {
-      if (data.albums.length === 0) {
-        albums = <li>No albums in your queue.</li>;
-      } else {
-        albums = data.albums.map(a => (
-          <Album
-            key={a.id}
-            title={a.title}
-            artist={a.artist.name}
-            artistId={a.id}
-            onXClick={this.handleClick}
-          />
-        ));
-      }
+export const GET_ALBUMS = gql`
+    query getAlbums {
+        albums {
+            title
+            id
+            artist {
+                name
+            }
+        }
     }
+`;
+
+export const AlbumsList = () => {
+    const { loading, error, data } = useQuery(GET_ALBUMS);
+
+    const [addNew, setAddNew] = useState(false);
+
+    const { albums } = data || {};
+
+    const handleDelete = (id) => {
+        console.log(id);
+    };
+
+    const toggleAddNewForm = () => setAddNew(!addNew);
+
+    const renderAlbums = () => {
+        if (albums.length) {
+            return albums.map((album) => (
+                <Album
+                    key={album.id}
+                    title={album.title}
+                    artist={album.artist.name}
+                    artistId={album.id}
+                    onXClick={() => handleDelete(album.id)}
+                />
+            ));
+        } else {
+            return <p>No albums in your queue.</p>;
+        }
+    };
+
     return (
-      <>
-        {addNew && <AddAlbumForm onXClick={this.addNew} />}
-        {!addNew && <PlusCircle onClick={this.addNew} color="#d3d3d3" size={32}/>}
-        <SList>{albums}</SList>
-        {data?.loading && <Loader />}
-      </>
+        <>
+            {loading && <Loader />}
+            {error && <p>Error!</p>}
+            {addNew ? (
+                <AddAlbumForm onXClick={toggleAddNewForm} />
+            ) : (
+                <PlusCircle onClick={toggleAddNewForm} color="#d3d3d3" size={32} />
+            )}
+            <SList>{renderAlbums()}</SList>
+        </>
     );
-  }
-}
-
-export default AlbumsList
-
-//
+};
