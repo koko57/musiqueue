@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useMutation, gql } from '@apollo/client';
 import styled from 'styled-components';
+import { useMutation, gql } from '@apollo/client';
 import { Button } from './Button';
 import { XCircle } from 'react-feather';
 
@@ -50,6 +50,7 @@ export const AddAlbumForm = ({ onXClick }) => {
     const [errorMessage, setErrorMessage] = useState('');
 
     const [addAlbum] = useMutation(ADD_ALBUM, {
+        // TODO: caching
         update(cache, { data: { addAlbum } }) {
             cache.modify({
                 fields: {

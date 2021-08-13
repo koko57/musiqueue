@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
-import { useQuery, gql, useMutation } from '@apollo/client';
-import { PlusCircle } from 'react-feather';
+import React from 'react';
 import styled from 'styled-components';
-import { AddAlbumForm } from './AddAlbumForm';
-import Album from './Album';
-import Loader from './Loader';
+import { useQuery, gql, useMutation } from '@apollo/client';
+import { Album } from './Album';
+import { Loader } from './Loader';
 
 const SList = styled.ul`
     margin: 2rem auto;
@@ -31,20 +29,22 @@ export const DELETE_ALBUM = gql`
 `;
 
 export const AlbumsList = () => {
-    const { loading, error, data } = useQuery(GET_ALBUMS);
-    const [deleteAlbum] = useMutation(DELETE_ALBUM, {
-        refetchQueries: ['getAlbums'],
-    });
+    const { loading: queryLoading, error: queryError, data } = useQuery(GET_ALBUMS);
 
-    const [addNew, setAddNew] = useState(false);
+    const [deleteAlbum, { loading: mutationLoading, error: mutationError }] = useMutation(
+        DELETE_ALBUM,
+        {
+            refetchQueries: ['getAlbums'],
+        },
+    );
 
     const { albums } = data || {};
 
-    const handleDelete = (id) => {
-        deleteAlbum({ variables: { id } });
-    };
+    const loading = queryLoading || mutationLoading;
 
-    const toggleAddNewForm = () => setAddNew(!addNew);
+    const handleDelete = async (id) => {
+        await deleteAlbum({ variables: { id } });
+    };
 
     const renderAlbums = () => {
         if (albums?.length) {
@@ -57,20 +57,28 @@ export const AlbumsList = () => {
                     onXClick={() => handleDelete(album.id)}
                 />
             ));
-        } else {
-            return <p>No albums in your queue.</p>;
         }
+        return <p>No albums in your queue.</p>;
+    };
+
+    const renderErrorMessage = (errors) => {
+        if (errors?.graphQLErrors) {
+            return errors.map(({ message }, i) => <span key={i}>{message}</span>);
+        }
+        return [];
+    };
+
+    const renderAllErrorMessages = () => {
+        const mutationErrors = renderErrorMessage(mutationError?.graphQLErrors);
+        const queryErrors = renderErrorMessage(queryError?.graphQLErrors);
+
+        return [...mutationErrors, ...queryErrors];
     };
 
     return (
         <>
             {loading && <Loader />}
-            {error && <p>Error!</p>}
-            {addNew ? (
-                <AddAlbumForm onXClick={toggleAddNewForm} />
-            ) : (
-                <PlusCircle onClick={toggleAddNewForm} color="#d3d3d3" size={32} />
-            )}
+            <>{renderAllErrorMessages()}</>
             <SList>{renderAlbums()}</SList>
         </>
     );

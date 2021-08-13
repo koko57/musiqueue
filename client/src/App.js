@@ -10,19 +10,15 @@ const client = new ApolloClient({
     cache: new InMemoryCache(),
 });
 
-class App extends Component {
-    render() {
-        return (
-            <ApolloProvider client={client}>
-                <ThemeProvider theme={theme}>
-                    <>
-                        <GlobalStyle />
-                        <Home />
-                    </>
-                </ThemeProvider>
-            </ApolloProvider>
-        );
-    }
-}
-
-export default App;
+export const App = () => {
+    return (
+        <ApolloProvider client={client}>
+            <ThemeProvider theme={theme}>
+                <>
+                    <GlobalStyle />
+                    <Home />
+                </>
+            </ThemeProvider>
+        </ApolloProvider>
+    );
+};
