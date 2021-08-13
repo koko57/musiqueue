@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import GlobalStyle from './styles/global';
 import { ThemeProvider } from 'styled-components';
